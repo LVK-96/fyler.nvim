@@ -514,6 +514,7 @@ function Finder:close()
     pcall(vim.api.nvim_buf_delete, self.buf_id, { force = true })
   end)
   self.win_id = nil
+  self._refresh_count = nil
   if #vim.fn.win_findbuf(self.buf_id) == 0 then pcall(vim.api.nvim_buf_delete, self.buf_id, { force = true }) end
 end
 
