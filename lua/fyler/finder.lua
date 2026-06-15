@@ -1008,6 +1008,7 @@ function Finder:open()
     vim.api.nvim_win_set_buf(self.win_id, self.buf_id)
   end
 
+  util.set_win_option(self.win_id, 'cursorline', false)
   util.set_win_option(self.win_id, 'number', false)
   util.set_win_option(self.win_id, 'relativenumber', false)
 
