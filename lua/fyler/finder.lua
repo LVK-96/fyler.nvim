@@ -1,4 +1,3 @@
-local libasync = Fyler.import('fyler.lib.async')
 local config = Fyler.import('fyler.config')
 local extensions = Fyler.import('fyler.extensions')
 local icon = Fyler.import('fyler.integrations.icon')
@@ -77,9 +76,9 @@ local util = Fyler.import('fyler.util')
 ---@field target_path string|nil
 
 ---@class fyler.FinderSchemeHandler
----@field is_dir fun(path: string): boolean
----@field scan_dir fun(path: string, cb: fun(err: string|nil, entries: table|nil))
----@field execute fun(actions: fyler.Action[], cb: fun(err: string|nil))
+---@field fs_is_dir fun(path: string): boolean
+---@field fs_scan_dir fun(path: string, cb: fun(err: string|nil, entries: table|nil))
+---@field fs_mutate fun(actions: fyler.Action[], cb: fun(err: string|nil))
 
 local M = {}
 local H = {}
@@ -441,7 +440,7 @@ H.state_update = function(inst, args)
   if not (cache_entry and cache_entry.expanded) then return end
 
   local handle_scan = function(node)
-    inst.state.scheme.scan_dir(target_path, function(err, entries)
+    inst.state.scheme.fs_scan_dir(target_path, function(err, entries)
       if not entries then
         if args.callback then vim.schedule(args.callback) end
         vim.schedule_wrap(vim.notify)(err, vim.log.levels.ERROR, { title = 'Fyler.nvim' })
@@ -537,7 +536,7 @@ function Finder:follow(args)
   end
 
   local expand_target = target_path
-  if not self.state.scheme.is_dir(target_path) then expand_target = vim.fs.dirname(target_path) end
+  if not self.state.scheme.fs_is_dir(target_path) then expand_target = vim.fs.dirname(target_path) end
 
   local relative = libpath.to_rel(root_path, expand_target)
   if not relative or #relative == 0 then
@@ -934,7 +933,7 @@ function Finder:mutate()
   local do_execute = function()
     local ordered_actions = vim.iter(order):map(function(i) return fs_actions[i] end):totable()
     local function execute()
-      self.state.scheme.execute(ordered_actions, function(err)
+      self.state.scheme.fs_mutate(ordered_actions, function(err)
         vim.schedule(function()
           if err then
             vim.notify('Failed to apply changes: ' .. err, vim.log.levels.ERROR)
@@ -968,7 +967,7 @@ function Finder:mutate()
       end)
     end
 
-    local done = libasync.barrier(extensions.hook_count('finder_execute_pre'), execute)
+    local done = util.once_all(extensions.hook_count('finder_execute_pre'), execute)
     extensions.run_hook('finder_execute_pre', ordered_actions, done)
   end
 
@@ -1086,7 +1085,7 @@ function Finder:refresh(args)
     local visible, hl_ns, lines = H.render_tree(self, flat)
     if args.callback then args.callback() end
 
-    local done = libasync.barrier(extensions.hook_count('finder_refresh_post'), function() finish_refresh(self) end)
+    local done = util.once_all(extensions.hook_count('finder_refresh_post'), function() finish_refresh(self) end)
     extensions.run_hook('finder_refresh_post', self, visible, hl_ns, lines, done)
   end)
 

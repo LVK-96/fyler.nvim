@@ -1,4 +1,3 @@
-local async = require('fyler.lib.async')
 local extensions = require('fyler.extensions')
 local libpath = require('fyler.lib.path')
 local util = require('fyler.util')
@@ -116,7 +115,7 @@ function H.statuses_async(entries, cb)
     total = total + 1
   end
 
-  local done = async.barrier(total, function() cb(all_statuses) end)
+  local done = util.once_all(total, function() cb(all_statuses) end)
 
   for root, _ in pairs(repos) do
     vim.system({ 'git', '-C', root, 'status', '--porcelain', '-z' }, { text = true }, function(result)
@@ -138,29 +137,21 @@ function H.get_default_highlights()
   if default_highlights_tbl then return default_highlights_tbl end
 
   local getfg = function(group) return util.get_hl_color(group, 'fg') end
-
-  local blue = getfg('Directory')
-  local grey = getfg('Comment')
-
-  default_highlights_tbl = {
+  return {
+    FylerGitConflict = { fg = '#E06C75' },
+    FylerGitDeleted = { fg = '#E06C75' },
+    FylerGitIgnored = { fg = getfg('Comment') },
     FylerGitModified = { fg = '#E5C07B' },
+    FylerGitRenamed = { fg = getfg('Directory') },
     FylerGitStaged = { fg = '#98C379' },
     FylerGitUntracked = { fg = getfg('Normal') },
-    FylerGitDeleted = { fg = '#E06C75' },
-    FylerGitRenamed = { fg = blue },
-    FylerGitConflict = { fg = '#E06C75' },
-    FylerGitIgnored = { fg = grey },
   }
-  return default_highlights_tbl
 end
 
 extensions.register({
   name = 'git',
   setup = function(opts, config)
-    config.extensions.git = vim.tbl_deep_extend('force', {
-      icons = vim.deepcopy(default_icons),
-      inline = true,
-    }, opts)
+    config.extensions.git = vim.tbl_deep_extend('force', { icons = vim.deepcopy(default_icons), inline = true }, opts)
   end,
   hooks = {
     finder_refresh_post = function(inst, visible, hl_ns, lines, done)
@@ -169,6 +160,7 @@ extensions.register({
         done()
         return
       end
+
       local gc = H.git_col(lines)
       local function apply(i, item, stat)
         local icon, hl = H.get_icon(stat, cfg.icons)
