@@ -5,7 +5,10 @@ M.is_windows = jit.os == 'Windows'
 
 ---@nodiscard
 ---@return string
-M.do_join = function(...) return M.to_normalize(vim.fs.joinpath(...)) end
+M.do_join = function(...)
+  local joined = table.concat({ ... }, '/')
+  return M.to_normalize(joined)
+end
 
 ---@nodiscard
 ---@return string[]
@@ -40,7 +43,10 @@ end
 
 ---@nodiscard
 ---@return string
-M.to_abs = function(path) return M.to_normalize(vim.fs.abspath(path)) end
+M.to_abs = function(path)
+  if M.is_abs(path) then return M.to_normalize(path) end
+  return M.to_normalize(vim.fs.abspath(path))
+end
 
 ---@nodiscard
 ---@return string
@@ -61,7 +67,14 @@ end
 
 ---@nodiscard
 ---@return string
-M.to_normalize = function(path) return vim.fs.normalize(path) end
+M.to_normalize = function(path)
+  local is_unc = path:sub(1, 2) == '//' or path:sub(1, 2) == '\\\\'
+  local normalized = vim.fs.normalize(path)
+  if is_unc and normalized:sub(1, 2) ~= '//' and normalized:sub(1, 2) ~= '\\\\' then
+    if normalized:sub(1, 1) == '/' then return '//' .. normalized:sub(2) end
+  end
+  return normalized
+end
 
 ---@nodiscard
 ---@return string
@@ -89,9 +102,11 @@ end
 M.to_posix = function(path) return M.to_normalize(path) end
 if M.is_windows then
   M.to_posix = function(path)
-    path = M.to_normalize(path)
     if M.is_abs(path) then
-      if path:sub(1, 2) == '\\\\' then return M.to_normalize('/' .. path:gsub('\\', '/'):sub(2)) end
+      if path:sub(1, 2) == '\\\\' then
+        local forward = path:gsub('\\', '/')
+        return M.to_normalize('/' .. forward:sub(2))
+      end
       local drive, rest = path:match('^([%a]):[/\\](.*)$')
       if drive then return M.to_normalize(('/%s/%s'):format(drive, rest)) end
     end
