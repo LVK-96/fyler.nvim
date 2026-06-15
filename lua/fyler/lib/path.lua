@@ -85,12 +85,12 @@ if M.is_windows then
     if M.is_abs(path) then
       if normalized:sub(1, 2) == '//' then return normalized end
       local drive, rest = normalized:match('^/([%a])/(.*)$')
-      if drive then return ('%s:/%s'):format(drive, rest) end
+      if drive then return ('%s:/%s'):format(drive:upper(), rest) end
       return normalized
     end
     local drive, rest = normalized:match('^/([%a])/(.+)$')
     if drive then
-      local candidate = ('%s:/%s'):format(drive, rest)
+      local candidate = ('%s:/%s'):format(drive:upper(), rest)
       if M.to_posix(candidate) == path then return candidate end
     end
     return normalized
@@ -108,7 +108,7 @@ if M.is_windows then
         return M.to_normalize('/' .. forward:sub(2))
       end
       local drive, rest = path:match('^([%a]):[/\\](.*)$')
-      if drive then return M.to_normalize(('/%s/%s'):format(drive, rest)) end
+      if drive then return M.to_normalize(('/%s/%s'):format(drive:lower(), rest)) end
     end
     return M.to_normalize(path)
   end

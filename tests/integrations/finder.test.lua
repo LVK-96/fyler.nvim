@@ -151,17 +151,16 @@ T['Finder with kind']['can do basic file system manipulation'] = function(kind)
 end
 
 T['Finder with kind']['can handle swap in file system manipulation'] = function(kind)
+  local statusline = n.o.statusline
+  n.o.statusline = ' '
+  require('mini.test').finally(function() n.o.statusline = statusline end)
+
   local tmpdir = helper.get_tmpdir('data', { 'a-file', 'b-file' })
+
   n.fwd_lua('require("fyler").setup')({})
   n.fwd_lua('require("fyler").open')({ kind = kind, root_path = tmpdir })
   vim.uv.sleep(10)
-  n.type_keys({
-    '0',
-    'rb',
-    'j',
-    'ra',
-    ':w<CR>',
-  })
+  n.type_keys({ '0', 'rb', 'j', 'ra', ':w<CR>' })
   vim.uv.sleep(10)
   helper.expect.equality(
     vim.tbl_contains({
@@ -180,15 +179,7 @@ T['Finder with kind']['can handle chain-dependencies in file system manipulation
   n.fwd_lua('require("fyler").setup')({})
   n.fwd_lua('require("fyler").open')({ kind = kind, root_path = tmpdir })
   vim.uv.sleep(10)
-  n.type_keys({
-    '0',
-    'rb',
-    'j',
-    'rc',
-    'j',
-    'rd',
-    ':w<CR>',
-  })
+  n.type_keys({ '0', 'rb', 'j', 'rc', 'j', 'rd', ':w<CR>' })
   vim.uv.sleep(10)
   n.type_keys('y')
   vim.uv.sleep(10)

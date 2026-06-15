@@ -30,16 +30,30 @@ function _G.custom_tabline()
   return s .. '%#TabLineFill#'
 end
 
--- stylua: ignore
 for o, v in pairs({
-  background  = "dark",
-  backup      = false,
-  cmdheight   = 0,
-  fillchars   = { eob = " " },
-  laststatus  = 3,
-  readonly    = true,
-  statusline  = '%!v:lua.custom_statusline()',
-  swapfile    = false,
-  tabline     = '%!v:lua.custom_tabline()',
+  background = 'dark',
+  backup = false,
+  cmdheight = 0,
+  fillchars = {
+    eob = ' ',
+    horiz = '-',
+    horizup = '-',
+    horizdown = '-',
+    vert = '|',
+    vertleft = '|',
+    vertright = '|',
+    verthoriz = '+',
+    fold = '-',
+    foldopen = '-',
+    foldclose = '+',
+    foldsep = '|',
+  },
+  laststatus = 3,
+  readonly = true,
+  statusline = '%!v:lua.custom_statusline()',
+  swapfile = false,
+  tabline = '%!v:lua.custom_tabline()',
   writebackup = false,
-}) do vim.opt[o] = v end
+}) do
+  vim.opt[o] = v
+end

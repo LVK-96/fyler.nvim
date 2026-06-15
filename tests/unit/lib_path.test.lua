@@ -29,8 +29,8 @@ end
 T['to_posix converts windows absolute path'] = function()
   n.lua([[_G.path = require('fyler.lib.path')]])
   if jit.os == 'Windows' then
-    eq(n.lua_get('_G.path.to_posix("C:\\\\Users\\\\foo")'), '/C/Users/foo')
-    eq(n.lua_get('_G.path.to_posix("c:\\\\Users\\\\foo")'), '/C/Users/foo')
+    eq(n.lua_get('_G.path.to_posix("C:\\\\Users\\\\foo")'), '/c/Users/foo')
+    eq(n.lua_get('_G.path.to_posix("c:\\\\Users\\\\foo")'), '/c/Users/foo')
   end
 end
 
@@ -46,7 +46,7 @@ end
 
 T['to_os converts posix absolute path to windows'] = function()
   n.lua([[_G.path = require('fyler.lib.path')]])
-  if jit.os == 'Windows' then eq(n.lua_get('_G.path.to_os("/C/Users/foo")'), 'C:/Users/foo') end
+  if jit.os == 'Windows' then eq(n.lua_get('_G.path.to_os("/c/Users/foo")'), 'C:/Users/foo') end
 end
 
 T['to_os converts posix relative path to windows'] = function()
