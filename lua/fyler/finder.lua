@@ -1118,12 +1118,8 @@ function Finder:select(args)
     ---@return boolean
     local function get_should_close()
       if args.close then return true end
-      if self.opts.kind == 'floating' then
-        return not args.tabedit
-      end
-      if self.opts.kind == 'replace' then
-        return edit
-      end
+      if self.opts.kind == 'floating' then return not args.tabedit end
+      if self.opts.kind == 'replace' then return edit end
       return false
     end
     local should_close = get_should_close()
