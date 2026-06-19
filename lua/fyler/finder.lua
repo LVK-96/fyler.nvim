@@ -1115,12 +1115,18 @@ function Finder:select(args)
     self:refresh()
   else
     local edit = not (args.split or args.vsplit or args.tabedit)
-    local should_close = false
-    if self.opts.kind == 'floating' then
-      should_close = not args.tabedit
-    elseif self.opts.kind == 'replace' then
-      should_close = edit
+    ---@return boolean
+    local function get_should_close()
+      if args.close then return true end
+      if self.opts.kind == 'floating' then
+        return not args.tabedit
+      end
+      if self.opts.kind == 'replace' then
+        return edit
+      end
+      return false
     end
+    local should_close = get_should_close()
     if should_close then self:close() end
 
     local os_path = libpath.to_os(libpath.to_abs(node_data.link_target or node_data.full_path))
