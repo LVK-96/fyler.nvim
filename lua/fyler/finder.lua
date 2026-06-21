@@ -1033,17 +1033,19 @@ function Finder:open()
 
   for mode, keys in pairs(self.opts.mappings or {}) do
     for key, mapping in pairs(keys) do
-      mapping.opts = vim.tbl_deep_extend(
-        'force',
-        { noremap = true, nowait = true, silent = true },
-        mapping.opts or {},
-        { buffer = self.buf_id }
-      )
-      if type(mapping.action) == 'function' then
-        vim.keymap.set(mode, key, function() mapping.action(self, mapping.args) end, mapping.opts)
-      elseif type(mapping.action) == 'string' then
-        local action = self[mapping.action]
-        if action then vim.keymap.set(mode, key, function() action(self, mapping.args) end, mapping.opts) end
+      if type(mapping) == 'table' and not mapping.disabled then
+        mapping.opts = vim.tbl_deep_extend(
+          'force',
+          { noremap = true, nowait = true, silent = true },
+          mapping.opts or {},
+          { buffer = self.buf_id }
+        )
+        if type(mapping.action) == 'function' then
+          vim.keymap.set(mode, key, function() mapping.action(self, mapping.args) end, mapping.opts)
+        elseif type(mapping.action) == 'string' then
+          local action = self[mapping.action]
+          if action then vim.keymap.set(mode, key, function() action(self, mapping.args) end, mapping.opts) end
+        end
       end
     end
   end

@@ -8,7 +8,6 @@ local expect_config = function(field, value) eq(n.lua_get('require("fyler.config
 
 T['Creates default configuration'] = function()
   n.fwd_lua('require("fyler").setup')()
-
   expect_config('auto_confirm_simple_mutation', false)
   expect_config('kind', 'replace')
   expect_config('kind_presets.floating.border', 'single')
@@ -49,8 +48,12 @@ end
 
 T['Respect custom configuration'] = function()
   n.fwd_lua('require("fyler").setup')({ use_as_default_explorer = false })
-
   expect_config('use_as_default_explorer', false)
+end
+
+T['Individual mapping with disable flag is preserved'] = function()
+  n.fwd_lua('require("fyler").setup')({ mappings = { n = { ['q'] = { disabled = true } } } })
+  expect_config('mappings.n["q"].disabled', true)
 end
 
 return T

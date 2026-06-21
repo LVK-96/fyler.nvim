@@ -62,16 +62,22 @@ fyler.setup({
   auto_confirm_simple_mutation = false,
   -- Restricts cursor from moving outside editable region
   bound_cursor = true,
+  -- Buffer-local options applied to the finder buffer (see: nvim_set_option_value)
+  buf_opts = {},
   -- Follow current file
   follow_current_file = true,
-  -- Extensions
+  -- List of extensions to enable (e.g., 'git', 'trash')
   extensions = {},
-  -- Event hooks
+  -- Event hooks for custom behavior (on_highlight, on_delete, on_rename)
   hooks = {},
+  -- External integrations (e.g., icon provider)
   integrations = {},
+  -- Window-local options applied to the finder window (see: nvim_set_option_value)
+  win_opts = {},
   -- Buffer kind to use globally.
   kind = 'replace',
-  -- Per-kind buffer configuration.
+  -- Per-kind preset overrides. Each preset can contain mappings, buf_opts,
+  -- win_opts, and any window layout fields (width, height, border, etc.).
   kind_presets = {
     floating = {
       -- Border style (see: :h winborder)
@@ -99,6 +105,7 @@ fyler.setup({
     split_right = { width = '25%' },
     split_right_most = { width = '25%' },
   },
+  -- Key mappings organized by mode (see: fyler.Mapping)
   mappings = {
     n = {
       ['-'] = { action = 'visit', args = { parent = true } },
@@ -115,9 +122,8 @@ fyler.setup({
       ['q'] = { action = 'close' },
     },
   },
-  -- UI options
+  -- UI configuration
   ui = {
-    -- Whether to draw indent guides at each depth level.
     hidden_items = {
       -- Toggleable pre-defined switches (e.g. 'dotfiles' to hide files starting with a dot).
       switches = { 'dotfiles' },
@@ -128,6 +134,7 @@ fyler.setup({
       -- Always hide items matching these patterns, even if they would normally be visible.
       always_hidden = {},
     },
+    -- Whether to draw indent guides at each depth level.
     indent_guides = false,
   },
 })
