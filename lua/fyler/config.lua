@@ -6,7 +6,7 @@ local M = {}
 ---@field on_rename fun(old_path: string, new_path: string)|nil
 
 ---@class fyler.Mapping
----@field action string|fun(self: fyler.Finder, args: table)
+---@field action string|fun(self: fyler.Finder, args: table)|nil
 ---@field args table|nil
 ---@field disabled boolean|nil
 ---@field opts table|nil
