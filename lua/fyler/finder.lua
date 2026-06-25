@@ -963,7 +963,7 @@ end
 
 function Finder:resize() util.window_resize(self.win_id, self.opts) end
 
----@param args { close: boolean|nil, tabedit: boolean|nil, split: boolean|nil, vsplit: boolean|nil }|nil
+---@param args { close: boolean|nil, tabedit: boolean|nil, split: boolean|nil, vsplit: boolean|nil, pick: boolean|nil }|nil
 function Finder:select(args)
   args = args or {}
 
@@ -980,6 +980,7 @@ function Finder:select(args)
     end
   else
     local edit = not (args.split or args.vsplit or args.tabedit)
+
     ---@return boolean
     local function get_should_close()
       if args.close then return true end
@@ -987,12 +988,25 @@ function Finder:select(args)
       if self.opts.kind == 'replace' then return edit end
       return false
     end
+
+    local os_path = libpath.to_os(libpath.to_abs(node_data.link or node_data.path))
+
+    local pick_succeeded = false
+    if args.pick then
+      local target_win = input.get_selected_window()
+      if target_win then
+        pick_succeeded = true
+        vim.api.nvim_set_current_win(target_win)
+      end
+    end
+
     local should_close = get_should_close()
     if should_close then self:close() end
 
-    local os_path = libpath.to_os(libpath.to_abs(node_data.link or node_data.path))
-    local should_goto_suitable_window = not (should_close or self.opts.kind == 'replace')
-    if should_goto_suitable_window then M.window_goto_suitable(self, os_path) end
+    if not pick_succeeded then
+      local should_goto_suitable_window = not (should_close or self.opts.kind == 'replace')
+      if should_goto_suitable_window then M.window_goto_suitable(self, os_path) end
+    end
 
     local splitright = vim.o.splitright
     local splitbelow = vim.o.splitbelow

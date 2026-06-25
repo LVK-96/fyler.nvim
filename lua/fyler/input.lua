@@ -73,4 +73,53 @@ M.get_confirmation = function(lines, highlights, callback)
   buffer_set_keymap(buf_id, 'n', '<C-c>', get_callback(false))
 end
 
+---@param filter function|nil
+---@return integer|nil
+M.get_selected_window = function(filter)
+  ---@cast filter fun(win_id: integer, buf_id: integer): boolean
+  filter = vim.F.if_nil(filter, function(_, buf_id) return not vim.bo[buf_id].filetype:find('^fyler') end)
+
+  local char_to_win_id = {}
+  local chars = 'asdfghjkl'
+  local win_id_to_char = {}
+  local win_id_to_config = {}
+
+  local tabpage_wins = vim
+    .iter(vim.api.nvim_tabpage_list_wins(0))
+    :filter(function(win_id)
+      if #chars == 0 then return false end
+      local buf_id = vim.api.nvim_win_get_buf(win_id)
+      local win_config = vim.api.nvim_win_get_config(win_id)
+      local should_keep = #win_config.relative == 0 and filter(win_id, buf_id)
+      if should_keep then
+        local char = chars:sub(1, 1)
+        win_id_to_char[win_id] = char
+        win_id_to_config[win_id] = win_config
+        char_to_win_id[char] = win_id
+        chars = chars:sub(2)
+      end
+      return should_keep
+    end)
+    :totable()
+
+  if #tabpage_wins <= 1 then return tabpage_wins[1] end
+
+  for win_id, win_config in pairs(win_id_to_config) do
+    win_config.winbar = vim.wo[win_id].winbar
+    win_config.winhighlight = vim.wo[win_id].winhighlight
+    vim.wo[win_id].winhighlight = 'WinBar:FylerWinpickMarker,WinBarNC:FylerWinpickMarker'
+    vim.wo[win_id].winbar = string.rep(' ', (win_config.width - 1) / 2) .. win_id_to_char[win_id]
+  end
+
+  vim.cmd.redraw()
+
+  local choice = vim.fn.getcharstr()
+  for win_id, win_config in pairs(win_id_to_config) do
+    vim.wo[win_id].winbar = win_config.winbar
+    vim.wo[win_id].winhighlight = win_config.winhighlight
+  end
+
+  return char_to_win_id[choice]
+end
+
 return M

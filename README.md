@@ -85,7 +85,7 @@ fyler.setup({
       -- - string with '%' for relative (e.g. '70%')
       -- - number for absolute
       height = '80%',
-      mappings = { n = { ['<CR>'] = { action = 'select', args = { close = true } } } },
+      mappings = { n = { ['<CR>'] = { action = 'select', args = { close = true, pick = false } } } },
       width = '60%',
       -- Horizontal alignment: 'start' | 'center' | 'end'
       col = 'center',
@@ -93,7 +93,7 @@ fyler.setup({
       row = 'center',
     },
     replace = {
-      mappings = { n = { ['<CR>'] = { action = 'select', args = { close = true } } } },
+      mappings = { n = { ['<CR>'] = { action = 'select', args = { close = true, pick = false } } } },
     },
     split_above = { height = '50%' },
     split_above_all = { height = '50%' },
@@ -114,7 +114,7 @@ fyler.setup({
       ['<C-S>'] = { action = 'select', args = { split = true } },
       ['<C-T>'] = { action = 'select', args = { tabedit = true } },
       ['<C-V>'] = { action = 'select', args = { vsplit = true } },
-      ['<CR>'] = { action = 'select' },
+      ['<CR>'] = { action = 'select', args = { pick = true } },
       ['='] = { action = 'visit' },
       ['g.'] = { action = 'toggle_ui', args = { 'hidden_items' } },
       ['gi'] = { action = 'toggle_ui', args = { 'indent_guides' } },
