@@ -973,11 +973,7 @@ function Finder:select(args)
     vim.notify('BROKEN SYMLINK: ' .. node_data.path, vim.log.levels.WARN)
   elseif node_data.type == 'directory' then
     self.state:toggle(node_data.path)
-    if self.state.meta[libpath.to_key(node_data.path)] then
-      self:refresh({ target_path = node_data.path })
-    else
-      self:refresh({ target_path = libpath.to_dirname(node_data.path) })
-    end
+    self:refresh({ recursive = true })
   else
     local edit = not (args.split or args.vsplit or args.tabedit)
 

@@ -177,13 +177,18 @@ function M.new(root_path, scheme)
 
   function instance:to_lines()
     local result = {}
+
     self:walk(function(node, depth)
       if depth == 0 then return end
+
       local entry = M.store[node.value]
       local item = { id = entry.id, path = entry.path, name = entry.name, type = entry.type, depth = depth - 1 }
+
       if entry.type == 'directory' then item.expanded = self.meta[libpath.to_key(entry.path)] or false end
+
       table.insert(result, item)
     end, { sort_children = true })
+
     return result
   end
 
