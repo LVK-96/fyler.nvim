@@ -75,14 +75,18 @@ local M = {}
 ---
 --- - `auto_confirm_simple_mutation` is a boolean value which determine
 --- whether to skip confirmation for mutation or not.
+---
 --- - `bound_cursor` is a boolean value which determine whether bound
 --- cursor to functional section or not.
+---
 --- - `buf_opts` is a table value which determine buffer local options.
+---
 --- - `follow_current_file` is a boolean value which determine
 --- whether to follow current file.
+---
 --- - `extensions` is a table value which determine which
 --- extensions to include and how to configure them.
---- for example:
+---
 --- >lua
 ---   {
 ---     -- Enable git extension
@@ -95,12 +99,13 @@ local M = {}
 ---     watcher = { enabled = true }
 ---   }
 --- <
+---
 --- - `hooks` is a table value which determine custom event hooks.
 ---   Each hook is an optional function called when the corresponding event
 ---   occurs: `on_delete(path)` when a file is deleted,
 ---   `on_highlight(highlights, palette)` for highlight customization,
 ---   and `on_rename(old_path, new_path)` when a file is renamed.
----   for example:
+---
 --- >lua
 ---   {
 ---     -- Called when a file is deleted
@@ -113,8 +118,10 @@ local M = {}
 ---     end,
 ---   }
 --- <
+---
 --- - `integrations` is a table value which determine external integrations
----   to use. for example:
+---   to use.
+---
 --- >lua
 ---   {
 ---     -- Use mini.icons as the icon provider
@@ -129,16 +136,21 @@ local M = {}
 ---     icon = 'vim_nerdfont'
 ---   }
 --- <
+---
 --- - `win_opts` is a table value which determine window local options.
+---
 --- - `kind` is a string value which determines which window style to
 --- use. Possible values are `floating`, `replace`, `split_left`,
 --- `split_left_most`, `split_above`, `split_above_all`, `split_right`,
 --- `split_right_most`, `split_below`, `split_below_all`
+---
 --- - `kind_presets` is a table value which determine the kind level
 --- configuration which has higher priority in merging of configurations.
 --- It follow almost everything from the top-level fields.
+---
 --- - `mappings` is table value which determine keymaps configuration to
 --- apply. Format for defining a mapping is as follows:
+---
 --- >lua
 ---   {
 ---     -- Builtin mapping
@@ -161,12 +173,13 @@ local M = {}
 ---     ['<key>'] = { disabled = true }
 ---   }
 --- <
+---
 --- - `ui` is a table value which determine the UI behaviour.
 ---   It is the combination of `hidden_items` and `indent_guides` where
 ---   `hidden_items` further has `always_hidden`, `always_visible`,
 ---   `patterns`, and `switches` list of patterns. While `indent_guides`
 ---   is a boolean value which shows indentation guides in the buffer.
----   for example:
+---
 --- >lua
 ---   {
 ---     hidden_items = {
@@ -183,8 +196,9 @@ local M = {}
 ---     indent_guides = true,
 ---   }
 --- <
---- - `use_as_default_explorer` is a boolean value which determine
---- whether to use finder as the default file explorer.
+---
+--- - `use_as_default_explorer` is a boolean value which determine whether
+--- to use finder as the default file explorer.
 ---
 ---@tag fyler.configuration
 local default_config = {
