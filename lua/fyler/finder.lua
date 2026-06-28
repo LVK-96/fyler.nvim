@@ -321,13 +321,18 @@ H.compute_fs_actions = function(instance, id_to_path, buf_lines)
   end
 
   for id, transition in pairs(transitions) do
-    local keep_original = vim.tbl_contains(transition, id_to_path[id])
-    for i, new_path in ipairs(transition) do
-      if not (new_path == id_to_path[id]) then
-        if keep_original or i < #transition then
-          table.insert(fs_actions, { name = 'copy', src = id_to_path[id], dst = new_path })
-        else
-          table.insert(fs_actions, { name = 'move', src = id_to_path[id], dst = new_path })
+    local src_path = id_to_path[id] or (state.store[id] and state.store[id].path)
+    if not src_path then
+      table.insert(errors, ('Unknown entry with id %d'):format(id))
+    else
+      local keep_original = vim.tbl_contains(transition, src_path)
+      for i, new_path in ipairs(transition) do
+        if not (new_path == src_path) then
+          if keep_original or i < #transition or not id_to_path[id] then
+            table.insert(fs_actions, { name = 'copy', src = src_path, dst = new_path })
+          else
+            table.insert(fs_actions, { name = 'move', src = src_path, dst = new_path })
+          end
         end
       end
     end
