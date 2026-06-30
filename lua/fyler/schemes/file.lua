@@ -141,6 +141,9 @@ M.fs_scan_dir = function(path, cb)
             entry.link_target = entry.link
           end
         end
+      elseif entry.type == nil then
+        local stat_err, stat = uv.fs_stat(entry.path)
+        if not stat_err then entry.type = stat.type end
       end
     end
     fs('fs_closedir', dir)
